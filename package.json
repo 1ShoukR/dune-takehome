@@ -1,0 +1,19 @@
+{
+  "name": "dune-takehome",
+  "version": "1.0.0",
+  "description": "Takehome project for Dune Security",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1ShoukR/dune-takehome.git"
+  },
+  "author": "Rahmin Shoukoohi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/1ShoukR/dune-takehome/issues"
+  },
+  "homepage": "https://github.com/1ShoukR/dune-takehome#readme"
+}
