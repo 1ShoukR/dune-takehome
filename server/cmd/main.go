@@ -105,8 +105,8 @@ func setupRoutes(api fiber.Router) {
 	forms.Post("/", formHandler.CreateForm)
 	forms.Get("/:id", formHandler.GetFormByID)
 	forms.Put("/:id", formHandler.UpdateForm)
+	forms.Get("/:id/analytics", formHandler.GetFormAnalytics)
 
-	// Public routes (no auth required)
 	public := api.Group("/public")
 	public.Get("/forms/:shareUrl", formHandler.GetPublicForm)
 	public.Post("/forms/:shareUrl/responses", formHandler.SubmitPublicFormResponse)
