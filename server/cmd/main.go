@@ -91,6 +91,7 @@ func main() {
 func setupRoutes(api fiber.Router) {
 	// Initialize handlers
 	userHandler := handlers.NewUserHandler()
+	formHandler := handlers.NewFormHandler()
 
 	// Auth routes
 	auth := api.Group("/auth")
@@ -99,19 +100,11 @@ func setupRoutes(api fiber.Router) {
 	auth.Get("/profile", middleware.AuthRequired(),  userHandler.GetProfile)
 
 	// Form routes
-	api.Get("/forms", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{"message": "Get all forms"})
-	})
-
-	api.Post("/forms", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{"message": "Create form"})
-	})
-
-	api.Get("/forms/:id", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{"message": "Get form by ID"})
-	})
-
-	api.Post("/forms/:id/responses", func(c *fiber.Ctx) error {
+	forms := api.Group("/forms", middleware.AuthRequired())
+	forms.Get("/", formHandler.GetUserForms)
+	forms.Post("/", formHandler.CreateForm)
+	forms.Get("/:id", formHandler.GetFormByID)
+	forms.Post("/:id/responses", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"message": "Submit form response"})
 	})
 }
