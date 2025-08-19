@@ -2,10 +2,13 @@ package services
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"time"
 
 	"dune-takehome-server/database"
 	"dune-takehome-server/models"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -71,6 +74,11 @@ func (s *FormService) CreateForm(userID primitive.ObjectID, req models.FormReque
 		UpdatedAt:   time.Now(),
 	}
 
+	// Generate share URL if publishing
+	if status == models.FormStatusPublished {
+		form.ShareURL = generateShareURL()
+	}
+
 	_, err := s.collection.InsertOne(ctx, form)
 	if err != nil {
 		return nil, err
@@ -114,4 +122,59 @@ func (s *FormService) GetUserFormByID(userID, formID primitive.ObjectID) (*model
 	}
 
 	return &form, nil
+}
+
+// UpdateForm updates an existing form
+func (s *FormService) UpdateForm(userID, formID primitive.ObjectID, req models.FormRequest) (*models.Form, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	status := req.Status
+	if status == "" {
+		status = models.FormStatusDraft
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"title":       req.Title,
+			"description": req.Description,
+			"fields":      req.Fields,
+			"status":      status,
+			"updated_at":  time.Now(),
+		},
+	}
+
+	// Generate share URL if publishing and doesn't already have one
+	if status == models.FormStatusPublished {
+		var existingForm models.Form
+		err := s.collection.FindOne(ctx, bson.M{
+			"_id":     formID,
+			"user_id": userID,
+		}).Decode(&existingForm)
+
+		if err == nil && existingForm.ShareURL == "" {
+			update["$set"].(bson.M)["share_url"] = generateShareURL()
+		}
+	}
+
+	result, err := s.collection.UpdateOne(
+		ctx,
+		bson.M{"_id": formID, "user_id": userID},
+		update,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if result.MatchedCount == 0 {
+		return nil, nil // Form not found or doesn't belong to user
+	}
+
+	return s.GetUserFormByID(userID, formID)
+}
+
+func generateShareURL() string {
+	bytes := make([]byte, 16)
+	rand.Read(bytes)
+	return hex.EncodeToString(bytes)
 }
