@@ -38,7 +38,7 @@ export default function PublicFormPage() {
   const fetchPublicForm = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/v1/public/forms/${params.shareUrl}`);
+      const response = await fetch(`http://localhost:8080/api/v1/public/forms/${params.shareUrl}`);
       
       if (!response.ok) {
         throw new Error('Form not found');
@@ -47,6 +47,7 @@ export default function PublicFormPage() {
       const data = await response.json();
       setForm(data);
     } catch (error) {
+      console.error('Error fetching form:', error); 
       setError('Form not found or no longer available');
     } finally {
       setIsLoading(false);
@@ -169,7 +170,7 @@ export default function PublicFormPage() {
                       placeholder={field.placeholder}
                       value={responses[field.id] || ''}
                       onChange={(e) => handleInputChange(field.id, e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   ) : field.type === 'textarea' ? (
                     <textarea
@@ -177,7 +178,7 @@ export default function PublicFormPage() {
                       value={responses[field.id] || ''}
                       onChange={(e) => handleInputChange(field.id, e.target.value)}
                       rows={4}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   ) : field.type === 'number' ? (
                     <input
@@ -185,13 +186,13 @@ export default function PublicFormPage() {
                       placeholder={field.placeholder}
                       value={responses[field.id] || ''}
                       onChange={(e) => handleInputChange(field.id, e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   ) : field.type === 'select' ? (
                     <select
                       value={responses[field.id] || ''}
                       onChange={(e) => handleInputChange(field.id, e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                       <option value="">Select an option...</option>
                       {field.options?.map((option, index) => (
