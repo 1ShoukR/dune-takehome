@@ -81,7 +81,7 @@ export default function PublicFormPage() {
       setIsSubmitting(true);
       setError(null);
 
-      const response = await fetch(`/api/v1/public/forms/${params.shareUrl}/responses`, {
+      const response = await fetch(`http://localhost:8080/api/v1/public/forms/${params.shareUrl}/responses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
