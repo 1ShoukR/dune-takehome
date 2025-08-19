@@ -56,4 +56,50 @@ export const authAPI = {
   },
 };
 
+export interface FormField {
+  id: string;
+  type: 'text' | 'textarea' | 'email' | 'number' | 'select' | 'radio' | 'checkbox' | 'rating';
+  label: string;
+  placeholder?: string;
+  required: boolean;
+  options?: string[];
+  validation?: Record<string, string>;
+  order: number;
+}
+
+export interface CreateFormRequest {
+  title: string;
+  description?: string;
+  fields: FormField[];
+  status?: 'draft' | 'published';
+}
+
+export interface SubmitFormResponse {
+  [fieldId: string]: unknown; 
+}
+
+
+export const formsAPI = {
+  getAllForms: async (status?: string) => {
+    const params = status ? `?status=${status}` : '';
+    const response = await api.get(`/forms${params}`);
+    return response.data;
+  },
+
+  createForm: async (formData: CreateFormRequest) => {
+    const response = await api.post('/forms', formData);
+    return response.data;
+  },
+
+  getFormById: async (id: string) => {
+    const response = await api.get(`/forms/${id}`);
+    return response.data;
+  },
+
+  submitFormResponse: async (formId: string, responseData: SubmitFormResponse) => {
+    const response = await api.post(`/forms/${formId}/responses`, responseData);
+    return response.data;
+  },
+};
+
 export default api;
