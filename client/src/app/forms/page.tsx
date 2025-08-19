@@ -10,6 +10,7 @@ interface Form {
   title: string;
   description?: string;
   status: 'draft' | 'published' | 'archived';
+  share_url?: string; 
   created_at: string;
   updated_at: string;
 }
@@ -130,7 +131,11 @@ export default function FormsPage() {
             ) : (
               <div className="divide-y divide-gray-200">
                 {forms.map((form) => (
-                  <div key={form.id} className="p-6">
+                  <div
+                    key={form.id}
+                    className="p-6 hover:bg-gray-50 cursor-pointer"
+                    onClick={() => router.push(`/forms/${form.id}`)}
+                  >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <h3 className="text-lg font-medium text-gray-900">
@@ -154,12 +159,42 @@ export default function FormsPage() {
                           <span>
                             Updated {new Date(form.updated_at).toLocaleDateString()}
                           </span>
+                          {form.status === 'published' && form.share_url && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(`${window.location.origin}/f/${form.share_url}`);
+                                alert('Share link copied to clipboard!');
+                              }}
+                              className="text-green-600 hover:text-green-900 text-sm font-medium"
+                            >
+                              Share
+                            </button>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <button className="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/forms/${form.id}/edit`);
+                          }}
+                          className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
+                        >
                           Edit
                         </button>
+                        {form.status === 'published' && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(`${window.location.origin}/f/${form.share_url}`);
+                              alert('Share link copied!');
+                            }}
+                            className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700"
+                          >
+                            Copy Share Link
+                          </button>
+                        )}
                         <button className="text-gray-400 hover:text-gray-600 text-sm font-medium">
                           •••
                         </button>
