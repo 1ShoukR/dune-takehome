@@ -22,7 +22,9 @@ export interface FormField {
 export interface FormData {
   title: string;
   description: string;
+  share_url?: string;
   fields: FormField[];
+  status: string;
 }
 
 interface FormBuilderProps {
@@ -37,6 +39,8 @@ export default function FormBuilder({ onSave, isLoading, initialData }: FormBuil
       title: '',
       description: '',
       fields: [],
+      status: 'draft',
+      share_url: '',
     }
   );
   const [selectedField, setSelectedField] = useState<string | null>(null);
