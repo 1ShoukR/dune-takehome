@@ -5,6 +5,7 @@ import (
 
 	"dune-takehome-server/models"
 	"dune-takehome-server/services"
+
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -137,6 +138,59 @@ func (h *FormHandler) GetFormByID(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to retrieve form",
+		})
+	}
+
+	if form == nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Form not found",
+		})
+	}
+
+	return c.JSON(form.ToResponse())
+}
+
+// UpdateForm updates an existing form
+func (h *FormHandler) UpdateForm(c *fiber.Ctx) error {
+	formIDStr := c.Params("id")
+	formID, err := primitive.ObjectIDFromHex(formIDStr)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid form ID",
+		})
+	}
+
+	userIDStr := c.Locals("userID")
+	if userIDStr == nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Unauthorized",
+		})
+	}
+
+	userID, err := primitive.ObjectIDFromHex(userIDStr.(string))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid user ID",
+		})
+	}
+
+	var req models.FormRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	if strings.TrimSpace(req.Title) == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Form title is required",
+		})
+	}
+
+	form, err := h.formService.UpdateForm(userID, formID, req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to update form",
 		})
 	}
 
