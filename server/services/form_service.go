@@ -173,6 +173,23 @@ func (s *FormService) UpdateForm(userID, formID primitive.ObjectID, req models.F
 	return s.GetUserFormByID(userID, formID)
 }
 
+// GetFormByShareURL retrieves a form by its share URL
+func (s *FormService) GetFormByShareURL(shareURL string) (*models.Form, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var form models.Form
+	err := s.collection.FindOne(ctx, bson.M{"share_url": shareURL}).Decode(&form)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil // Form not found
+		}
+		return nil, err
+	}
+
+	return &form, nil
+}
+
 func generateShareURL() string {
 	bytes := make([]byte, 16)
 	rand.Read(bytes)
