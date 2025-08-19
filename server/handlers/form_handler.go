@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"strings"
 
 	"dune-takehome-server/models"
@@ -201,4 +202,74 @@ func (h *FormHandler) UpdateForm(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(form.ToResponse())
+}
+
+// GetPublicForm retrieves a form by share URL (no auth required)
+func (h *FormHandler) GetPublicForm(c *fiber.Ctx) error {
+	shareURL := c.Params("shareUrl")
+	log.Printf("Looking for form with share_url: %s", shareURL)
+
+	if shareURL == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Share URL is required",
+		})
+	}
+
+	form, err := h.formService.GetFormByShareURL(shareURL)
+	if err != nil {
+		log.Printf("Error fetching form: %v", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to retrieve form",
+		})
+	}
+
+	if form == nil {
+		log.Printf("Form not found for share_url: %s", shareURL)
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Form not found",
+		})
+	}
+
+	if form.Status != models.FormStatusPublished {
+		log.Printf("Form found but not published. Status: %s", form.Status)
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Form not found",
+		})
+	}
+
+	log.Printf("Form found successfully: %s", form.Title)
+	return c.JSON(form.ToResponse())
+}
+
+// SubmitPublicFormResponse handles form submissions (no auth required)
+func (h *FormHandler) SubmitPublicFormResponse(c *fiber.Ctx) error {
+	shareURL := c.Params("shareUrl")
+	if shareURL == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Share URL is required",
+		})
+	}
+
+	form, err := h.formService.GetFormByShareURL(shareURL)
+	if err != nil || form == nil || form.Status != models.FormStatusPublished {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Form not found",
+		})
+	}
+
+	var req struct {
+		Responses map[string]interface{} `json:"responses"`
+	}
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	// TODO: Save response to database
+	// For now, just return success
+	return c.JSON(fiber.Map{
+		"message": "Response submitted successfully",
+		"form_id": form.ID.Hex(),
+	})
 }
