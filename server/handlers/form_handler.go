@@ -12,12 +12,14 @@ import (
 )
 
 type FormHandler struct {
-	formService *services.FormService
+	formService     *services.FormService
+	responseService *services.ResponseService
 }
 
 func NewFormHandler() *FormHandler {
 	return &FormHandler{
-		formService: services.NewFormService(),
+		formService:     services.NewFormService(),
+		responseService: services.NewResponseService(),
 	}
 }
 
@@ -206,16 +208,15 @@ func (h *FormHandler) UpdateForm(c *fiber.Ctx) error {
 
 // GetPublicForm retrieves a form by share URL (no auth required)
 func (h *FormHandler) GetPublicForm(c *fiber.Ctx) error {
-	shareURL := c.Params("shareUrl")
-	log.Printf("Looking for form with share_url: %s", shareURL)
+	log.Printf("Looking for form with share_url: %s", c.Params("shareUrl"))
 
-	if shareURL == "" {
+	if c.Params("shareUrl") == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Share URL is required",
 		})
 	}
 
-	form, err := h.formService.GetFormByShareURL(shareURL)
+	form, err := h.formService.GetFormByShareURL(c.Params("shareUrl"))
 	if err != nil {
 		log.Printf("Error fetching form: %v", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -224,7 +225,7 @@ func (h *FormHandler) GetPublicForm(c *fiber.Ctx) error {
 	}
 
 	if form == nil {
-		log.Printf("Form not found for share_url: %s", shareURL)
+		log.Printf("Form not found for share_url: %s", c.Params("shareUrl"))
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "Form not found",
 		})
@@ -243,33 +244,101 @@ func (h *FormHandler) GetPublicForm(c *fiber.Ctx) error {
 
 // SubmitPublicFormResponse handles form submissions (no auth required)
 func (h *FormHandler) SubmitPublicFormResponse(c *fiber.Ctx) error {
+	log.Printf("🔥 SubmitPublicFormResponse called with shareUrl: %s", c.Params("shareUrl"))
+
 	shareURL := c.Params("shareUrl")
 	if shareURL == "" {
+		log.Printf("❌ Share URL is empty")
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Share URL is required",
 		})
 	}
 
+	log.Printf("📝 Looking for form with shareUrl: %s", shareURL)
+
 	form, err := h.formService.GetFormByShareURL(shareURL)
 	if err != nil || form == nil || form.Status != models.FormStatusPublished {
+		log.Printf("❌ Form not found or not published. Error: %v, Form: %v", err, form)
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "Form not found",
 		})
 	}
 
-	var req struct {
-		Responses map[string]interface{} `json:"responses"`
-	}
+	log.Printf("✅ Form found: %s", form.Title)
+
+	var req models.FormResponseRequest
 	if err := c.BodyParser(&req); err != nil {
+		log.Printf("❌ Failed to parse request body: %v", err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
 	}
 
-	// TODO: Save response to database
-	// For now, just return success
-	return c.JSON(fiber.Map{
-		"message": "Response submitted successfully",
-		"form_id": form.ID.Hex(),
+	log.Printf("📋 Request body parsed, responses: %+v", req.Responses)
+
+	ipAddress := c.IP()
+	userAgent := c.Get("User-Agent")
+
+	response, err := h.responseService.CreateResponse(form.ID, req, ipAddress, userAgent)
+	if err != nil {
+		log.Printf("❌ Failed to save response: %v", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to save response",
+		})
+	}
+
+	log.Printf("✅ Response saved successfully with ID: %s", response.ID.Hex())
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message":     "Response submitted successfully",
+		"response_id": response.ID.Hex(),
+		"form_id":     form.ID.Hex(),
 	})
+}
+
+// GetFormAnalytics returns analytics data for a form
+func (h *FormHandler) GetFormAnalytics(c *fiber.Ctx) error {
+	formIDStr := c.Params("id")
+	formID, err := primitive.ObjectIDFromHex(formIDStr)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid form ID",
+		})
+	}
+
+	userIDStr := c.Locals("userID")
+	if userIDStr == nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Unauthorized",
+		})
+	}
+
+	userID, err := primitive.ObjectIDFromHex(userIDStr.(string))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid user ID",
+		})
+	}
+
+	form, err := h.formService.GetUserFormByID(userID, formID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to retrieve form",
+		})
+	}
+
+	if form == nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Form not found",
+		})
+	}
+
+	analytics, err := h.responseService.GetFormAnalytics(form)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to generate analytics",
+		})
+	}
+
+	return c.JSON(analytics)
 }
