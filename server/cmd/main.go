@@ -6,6 +6,7 @@ import (
 
 	"dune-takehome-server/database"
 	"dune-takehome-server/handlers"
+	"dune-takehome-server/middleware"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -95,7 +96,7 @@ func setupRoutes(api fiber.Router) {
 	auth := api.Group("/auth")
 	auth.Post("/register", userHandler.Register)
 	auth.Post("/login", userHandler.Login)
-	auth.Get("/profile",  userHandler.GetProfile)
+	auth.Get("/profile", middleware.AuthRequired(),  userHandler.GetProfile)
 
 	// Form routes
 	api.Get("/forms", func(c *fiber.Ctx) error {
