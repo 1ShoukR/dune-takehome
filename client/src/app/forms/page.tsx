@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import AuthenticatedLayout from '../../components/AuthenticatedLayout';
 import { formsAPI } from '../../services/api';
+import { useRouter } from 'next/navigation';
 
 interface Form {
   id: string;
@@ -17,6 +18,7 @@ export default function FormsPage() {
   const [forms, setForms] = useState<Form[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     fetchForms();
@@ -37,8 +39,7 @@ export default function FormsPage() {
   };
 
   const handleNewForm = () => {
-    // TODO: Navigate to form builder
-    console.log('Navigate to new form builder');
+    router.push('/forms/new');
   };
 
   const handleViewDrafts = () => {
