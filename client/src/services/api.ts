@@ -72,6 +72,7 @@ export interface CreateFormRequest {
   description?: string;
   fields: FormField[];
   status?: 'draft' | 'published';
+  share_url?: string;
 }
 
 export interface SubmitFormResponse {
@@ -98,6 +99,11 @@ export const formsAPI = {
 
   submitFormResponse: async (formId: string, responseData: SubmitFormResponse) => {
     const response = await api.post(`/forms/${formId}/responses`, responseData);
+    return response.data;
+  },
+
+  updateForm: async (id: string, formData: CreateFormRequest) => {
+    const response = await api.put(`/forms/${id}`, formData);
     return response.data;
   },
 };
