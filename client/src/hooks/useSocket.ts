@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useCallback } from 'react';
 
@@ -6,7 +7,7 @@ interface WebSocketMessage {
   [key: string]: any;
 }
 
-export function useSocket(path: string) {
+export function useSocket(_path: string) {
   const ws = useRef<WebSocket | null>(null);
   const listeners = useRef<Map<string, (data: any) => void>>(new Map());
 
