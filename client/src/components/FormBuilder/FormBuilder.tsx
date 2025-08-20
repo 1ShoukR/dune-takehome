@@ -237,13 +237,13 @@ export default function FormBuilder({ onSave, isLoading, initialData }: FormBuil
                     {formData.title || 'Untitled Form'}
                   </h1>
                   {formData.description && (
-                    <p className="mt-2 text-gray-600">{formData.description}</p>
+                    <p className="mt-2 text-gray-800">{formData.description}</p>
                   )}
                 </div>
                 
                 <div className="space-y-6">
                   {formData.fields.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">
+                    <p className="text-gray-700 text-center py-8">
                       No fields added yet. Switch to Build mode to add fields.
                     </p>
                   ) : (
@@ -303,7 +303,7 @@ export default function FormBuilder({ onSave, isLoading, initialData }: FormBuil
                         ) : field.type === 'rating' ? (
                           <div className="flex space-x-1">
                             {[1, 2, 3, 4, 5].map((star) => (
-                              <span key={star} className="text-2xl text-gray-300 cursor-pointer">⭐</span>
+                              <span key={star} className="text-2xl text-gray-600 cursor-pointer">⭐</span>
                             ))}
                           </div>
                         ) : null}
