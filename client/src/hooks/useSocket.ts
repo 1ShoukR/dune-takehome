@@ -12,7 +12,7 @@ export function useSocket(_path: string) {
   const listeners = useRef<Map<string, (data: any) => void>>(new Map());
 
   useEffect(() => {
-    ws.current = new WebSocket('ws://localhost:8080/ws');
+    ws.current = new WebSocket(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8080/ws');
 
     ws.current.onopen = () => {
       console.log('🔌 Connected to WebSocket server');
