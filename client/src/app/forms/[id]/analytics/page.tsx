@@ -113,10 +113,9 @@ useEffect(() => {
   return (
     <AuthenticatedLayout>
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
+            <h1 className="text-2xl font-bold text-black">Analytics Dashboard</h1>
             <p className="text-gray-600">{analytics.form_title}</p>
           </div>
           <div className="flex items-center space-x-3">
@@ -126,14 +125,13 @@ useEffect(() => {
             </div>
             <button
               onClick={() => router.push('/forms')}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-600 hover:text-black"
             >
               ← Back to Forms
             </button>
           </div>
         </div>
 
-        {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
@@ -147,7 +145,7 @@ useEffect(() => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Total Responses</dt>
-                  <dd className="text-lg font-medium text-gray-900">{analytics.total_responses}</dd>
+                  <dd className="text-lg font-medium text-black">{analytics.total_responses}</dd>
                 </dl>
               </div>
             </div>
@@ -165,7 +163,7 @@ useEffect(() => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Form Fields</dt>
-                  <dd className="text-lg font-medium text-gray-900">{analytics.field_analytics.length}</dd>
+                  <dd className="text-lg font-medium text-black">{analytics.field_analytics.length}</dd>
                 </dl>
               </div>
             </div>
@@ -183,7 +181,7 @@ useEffect(() => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Completion Rate</dt>
-                  <dd className="text-lg font-medium text-gray-900">
+                  <dd className="text-lg font-medium text-black">
                     {analytics.total_responses > 0 ? '100%' : '0%'}
                   </dd>
                 </dl>
@@ -192,14 +190,13 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Field Analytics */}
         <div className="space-y-6">
-          <h2 className="text-lg font-medium text-gray-900">Field Analytics</h2>
+          <h2 className="text-lg font-medium text-black">Field Analytics</h2>
           
           {analytics.field_analytics.length === 0 ? (
             <div className="bg-white rounded-lg shadow p-12 text-center">
               <div className="text-gray-400 text-6xl mb-4">📊</div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Data Yet</h3>
+              <h3 className="text-lg font-medium text-black mb-2">No Data Yet</h3>
               <p className="text-gray-500">
                 Once people start submitting responses, analytics will appear here.
               </p>
@@ -210,7 +207,7 @@ useEffect(() => {
                 <div key={field.field_id} className="bg-white rounded-lg shadow p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <h3 className="text-lg font-medium text-gray-900">{field.field_label}</h3>
+                      <h3 className="text-lg font-medium text-black">{field.field_label}</h3>
                       <p className="text-sm text-gray-500">
                         {field.field_type} • {field.response_count} responses
                       </p>
@@ -224,12 +221,11 @@ useEffect(() => {
                     </div>
                   </div>
 
-                  {/* Field-specific analytics display */}
                   <div className="space-y-3">
                     {field.field_type === 'rating' && field.data.average_rating && (
                       <div>
                         <div className="flex items-center space-x-2 mb-2">
-                          <span className="text-sm font-medium text-gray-700">Average Rating:</span>
+                          <span className="text-sm font-medium text-gray-900">Average Rating:</span>
                           <span className="text-lg font-bold text-yellow-600">
                             {field.data.average_rating.toFixed(1)}/5
                           </span>
@@ -238,8 +234,8 @@ useEffect(() => {
                           <div className="space-y-1">
                             {Object.entries(field.data.distribution).map(([rating, count]) => (
                               <div key={rating} className="flex items-center justify-between text-sm">
-                                <span>{rating} stars</span>
-                                <span className="font-medium">{count as number}</span>
+                                <span className="text-gray-900">{rating} stars</span>
+                                <span className="font-medium text-gray-900">{count as number}</span>
                               </div>
                             ))}
                           </div>
@@ -249,12 +245,12 @@ useEffect(() => {
 
                     {(field.field_type === 'select' || field.field_type === 'radio') && field.data.distribution && (
                       <div>
-                        <div className="text-sm font-medium text-gray-700 mb-2">Answer Distribution:</div>
+                        <div className="text-sm font-medium text-gray-900 mb-2">Answer Distribution:</div>
                         <div className="space-y-1">
                           {Object.entries(field.data.distribution).map(([option, count]) => (
                             <div key={option} className="flex items-center justify-between text-sm">
-                              <span className="truncate">{option}</span>
-                              <span className="font-medium ml-2">{count as number}</span>
+                              <span className="truncate text-gray-900">{option}</span>
+                              <span className="font-medium ml-2 text-gray-900">{count as number}</span>
                             </div>
                           ))}
                         </div>
@@ -265,15 +261,15 @@ useEffect(() => {
                       <div className="grid grid-cols-3 gap-4 text-center">
                         <div>
                           <div className="text-lg font-bold text-blue-600">{field.data.average.toFixed(2)}</div>
-                          <div className="text-xs text-gray-500">Average</div>
+                          <div className="text-xs text-gray-900">Average</div>
                         </div>
                         <div>
                           <div className="text-lg font-bold text-green-600">{field.data.min}</div>
-                          <div className="text-xs text-gray-500">Min</div>
+                          <div className="text-xs text-gray-900">Min</div>
                         </div>
                         <div>
                           <div className="text-lg font-bold text-red-600">{field.data.max}</div>
-                          <div className="text-xs text-gray-500">Max</div>
+                          <div className="text-xs text-gray-900">Max</div>
                         </div>
                       </div>
                     )}
@@ -283,7 +279,7 @@ useEffect(() => {
                         <div className="text-lg font-bold text-indigo-600">
                           {field.data.average_length?.toFixed(1) || 0}
                         </div>
-                        <div className="text-xs text-gray-500">Avg. Characters</div>
+                        <div className="text-xs text-gray-900">Avg. Characters</div>
                       </div>
                     )}
                   </div>
@@ -293,7 +289,6 @@ useEffect(() => {
           )}
         </div>
 
-        {/* Real-time indicator */}
         <div className="text-center py-4">
           <div className="inline-flex items-center space-x-2 text-sm text-gray-500">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
