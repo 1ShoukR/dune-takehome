@@ -85,10 +85,10 @@ export default function FormViewPage() {
         <div className="mb-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-black">
                 {isEditing ? 'Edit Form' : 'View Form'}
               </h1>
-              <p className="mt-1 text-sm text-gray-600">
+              <p className="mt-1 text-sm text-black">
                 {form.title}
               </p>
             </div>
@@ -97,7 +97,7 @@ export default function FormViewPage() {
                 <>
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                    className="px-4 py-2 text-sm font-medium text-black bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                   >
                     Edit Form
                   </button>
@@ -116,7 +116,7 @@ export default function FormViewPage() {
               )}
               <button
                 onClick={() => router.push('/forms')}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-black hover:text-black"
               >
                 ← Back to Forms
               </button>
@@ -141,39 +141,38 @@ export default function FormViewPage() {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="max-w-2xl">
               <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-900">{form.title}</h1>
+                <h1 className="text-2xl font-bold text-black">{form.title}</h1>
                 {form.description && (
-                  <p className="mt-2 text-gray-600">{form.description}</p>
+                  <p className="mt-2 text-black">{form.description}</p>
                 )}
               </div>
               
               <div className="space-y-6">
                 {form.fields.map((field) => (
                   <div key={field.id} className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-black">
                       {field.label}
                       {field.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
                     
-                    {/* Field preview - same as FormBuilder preview */}
                     {field.type === 'text' || field.type === 'email' ? (
                       <input
                         type={field.type}
                         placeholder={field.placeholder}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-500 disabled:placeholder-gray-500"
                         disabled
                       />
                     ) : field.type === 'textarea' ? (
                       <textarea
                         placeholder={field.placeholder}
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-500 disabled:placeholder-gray-500"
                         disabled
                       />
                     ) : field.type === 'rating' ? (
                       <div className="flex space-x-1">
                         {[1, 2, 3, 4, 5].map((star) => (
-                          <span key={star} className="text-2xl text-gray-300">⭐</span>
+                          <span key={star} className="text-2xl text-black">⭐</span>
                         ))}
                       </div>
                     ) : null}
