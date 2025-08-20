@@ -3,6 +3,8 @@ package services
 import (
 	"context"
 	"fmt"
+	"log" // Add this
+	"strconv"
 	"time"
 
 	"dune-takehome-server/database"
@@ -168,31 +170,45 @@ func (s *ResponseService) analyzeNumberField(fieldID string, responses []*models
 	var hasValues bool
 
 	for _, response := range responses {
-		if value, exists := response.Responses[fieldID]; exists {
+		if value, exists := response.Responses[fieldID]; exists && value != nil {
 			var num float64
+			var validNumber bool
 			switch v := value.(type) {
 			case float64:
 				num = v
+				validNumber = true
+			case float32:
+				num = float64(v)
+				validNumber = true
 			case int:
 				num = float64(v)
-			default:
-				continue
+				validNumber = true
+			case int64:
+				num = float64(v)
+				validNumber = true
+			case string:
+				if parsed, err := strconv.ParseFloat(v, 64); err == nil {
+					num = parsed
+					validNumber = true
+				}
 			}
 
-			if !hasValues {
-				min = num
-				max = num
-				hasValues = true
-			} else {
-				if num < min {
+			if validNumber {
+				if !hasValues {
 					min = num
-				}
-				if num > max {
 					max = num
+					hasValues = true
+				} else {
+					if num < min {
+						min = num
+					}
+					if num > max {
+						max = num
+					}
 				}
+				total += num
+				count++
 			}
-			total += num
-			count++
 		}
 	}
 
@@ -206,6 +222,17 @@ func (s *ResponseService) analyzeNumberField(fieldID string, responses []*models
 		data["max"] = 0
 	}
 	data["response_count"] = count
+
+	// Add debug logging after the loop
+	log.Printf("🔍 Debug number field %s: found %d valid numbers, total=%f, min=%f, max=%f",
+		fieldID, count, total, min, max)
+
+	// Also log the raw values
+	for _, response := range responses {
+		if value, exists := response.Responses[fieldID]; exists {
+			log.Printf("🔍 Raw value for field %s: %+v (type: %T)", fieldID, value, value)
+		}
+	}
 
 	return data
 }
