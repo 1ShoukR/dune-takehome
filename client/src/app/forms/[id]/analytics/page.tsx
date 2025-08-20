@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import AuthenticatedLayout from '../../../../components/AuthenticatedLayout';
 import { useSocket } from '../../../../hooks/useSocket';
+import api from '@/services/api';
 
 interface FieldAnalytics {
   field_id: string;
@@ -61,20 +62,8 @@ useEffect(() => {
     try {
       setIsLoading(true);
       setError(null);
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:8080/api/v1/forms/${params.id}/analytics`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch analytics');
-      }
-
-      const data = await response.json();
-      setAnalytics(data);
+      const response = await api.get(`/forms/${params.id}/analytics`);
+      setAnalytics(response.data);
       setLastUpdated(new Date());
     } catch (error) {
       console.error('Error fetching analytics:', error);
