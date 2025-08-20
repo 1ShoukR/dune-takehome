@@ -30,6 +30,7 @@ export default function AnalyticsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [hasJoinedRoom, setHasJoinedRoom] = useState(false);
   
   // WebSocket connection
   const socket = useSocket('/');
@@ -38,25 +39,38 @@ export default function AnalyticsPage() {
     fetchAnalytics();
   }, [params.id]);
 
-// Set up real-time updates
-useEffect(() => {
-  if (socket && params.id) {
-    // Join analytics room for this form
-    socket.emit('join-analytics', { form_id: params.id });
+  useEffect(() => {
+    if (socket && params.id && !hasJoinedRoom) {
+      const tryJoinRoom = () => {
+        socket.emit('join-analytics', { form_id: params.id });
+        console.log('📊 Attempting to join analytics room for form:', params.id);
+      };
 
-    // Listen for real-time analytics updates
-    socket.on('analytics-update', (data) => {
-      console.log('📊 Real-time analytics update:', data);
-      setAnalytics(data.analytics);
-      setLastUpdated(new Date());
-    });
+      tryJoinRoom();
+      
+      const retryTimeout = setTimeout(() => {
+        if (!hasJoinedRoom) {
+          console.log('🔄 Retrying join analytics room...');
+          tryJoinRoom();
+          setHasJoinedRoom(true);
+        }
+      }, 1000);
 
-    return () => {
-      socket.emit('leave-analytics', { form_id: params.id });
-      socket.off('analytics-update');
-    };
-  }
-}, [socket, params.id]);
+      socket.on('analytics-update', (data) => {
+        console.log('📊 Real-time analytics update:', data);
+        setAnalytics(data.analytics);
+        setLastUpdated(new Date());
+        setHasJoinedRoom(true); 
+      });
+
+      return () => {
+        clearTimeout(retryTimeout);
+        socket.emit('leave-analytics', { form_id: params.id });
+        socket.off('analytics-update');
+        setHasJoinedRoom(false);
+      };
+    }
+  }, [socket, params.id, hasJoinedRoom]);
 
   const fetchAnalytics = async () => {
     try {
