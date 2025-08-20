@@ -95,6 +95,12 @@ export default function FormViewPage() {
             <div className="flex items-center space-x-3">
               {!isEditing && (
                 <>
+              <button
+                onClick={() => router.push('/forms')}
+                className="text-black hover:text-black"
+              >
+                ← Back to Forms
+              </button>
                   <button
                     onClick={() => setIsEditing(true)}
                     className="px-4 py-2 text-sm font-medium text-black bg-white border border-gray-300 rounded-md hover:bg-gray-50"
@@ -114,12 +120,6 @@ export default function FormViewPage() {
                   )}
                 </>
               )}
-              <button
-                onClick={() => router.push('/forms')}
-                className="text-black hover:text-black"
-              >
-                ← Back to Forms
-              </button>
             </div>
           </div>
         </div>
