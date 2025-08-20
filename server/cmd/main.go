@@ -59,7 +59,7 @@ func main() {
 	// Middleware
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000",
+		AllowOrigins: "http://localhost:3000, https://your-backend-railway-url.railway.app/api/v1",
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
 	}))
