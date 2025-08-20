@@ -174,15 +174,6 @@ export default function FormsPage() {
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(`/forms/${form.id}/edit`);
-                          }}
-                          className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
-                        >
-                          Edit
-                        </button>
                         {form.status === 'published' && (
                           <button
                             onClick={(e) => {
@@ -195,6 +186,15 @@ export default function FormsPage() {
                             Copy Share Link
                           </button>
                         )}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/forms/${form.id}/analytics`);
+                          }}
+                          className="text-purple-600 hover:text-purple-900 text-sm font-medium"
+                        >
+                          Analytics
+                        </button>
                         <button className="text-gray-400 hover:text-gray-600 text-sm font-medium">
                           •••
                         </button>
