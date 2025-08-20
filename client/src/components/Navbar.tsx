@@ -37,7 +37,7 @@ export default function Navbar() {
 
             <div className="flex items-center space-x-4">
               <div className="text-sm text-gray-700">
-                Welcome back, <span className="font-medium text-gray-900">{user.name}</span>
+                Welcome <span className="font-medium text-gray-900">{user.name}</span>
               </div>
               
               <button
