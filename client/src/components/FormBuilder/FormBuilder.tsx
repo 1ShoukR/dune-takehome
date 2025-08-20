@@ -164,7 +164,7 @@ export default function FormBuilder({ onSave, isLoading, initialData }: FormBuil
                 value={formData.title}
                 onChange={(e) => updateFormSettings({ title: e.target.value })}
                 placeholder="Enter form title..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
             <div>
@@ -176,7 +176,7 @@ export default function FormBuilder({ onSave, isLoading, initialData }: FormBuil
                 onChange={(e) => updateFormSettings({ description: e.target.value })}
                 placeholder="Enter form description..."
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
           </div>
@@ -258,25 +258,25 @@ export default function FormBuilder({ onSave, isLoading, initialData }: FormBuil
                           <input
                             type={field.type}
                             placeholder={field.placeholder}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                             disabled
                           />
                         ) : field.type === 'textarea' ? (
                           <textarea
                             placeholder={field.placeholder}
                             rows={3}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                             disabled
                           />
                         ) : field.type === 'number' ? (
                           <input
                             type="number"
                             placeholder={field.placeholder}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                             disabled
                           />
                         ) : field.type === 'select' ? (
-                          <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" disabled>
+                          <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" disabled>
                             <option>Select an option...</option>
                             {field.options?.map((option, index) => (
                               <option key={index} value={option}>{option}</option>
@@ -287,7 +287,7 @@ export default function FormBuilder({ onSave, isLoading, initialData }: FormBuil
                             {field.options?.map((option, index) => (
                               <div key={index} className="flex items-center">
                                 <input type="radio" name={field.id} className="mr-2" disabled />
-                                <span className="text-sm text-gray-700">{option}</span>
+                                <span className="text-sm text-gray-900">{option}</span>
                               </div>
                             ))}
                           </div>
@@ -296,7 +296,7 @@ export default function FormBuilder({ onSave, isLoading, initialData }: FormBuil
                             {field.options?.map((option, index) => (
                               <div key={index} className="flex items-center">
                                 <input type="checkbox" className="mr-2" disabled />
-                                <span className="text-sm text-gray-700">{option}</span>
+                                <span className="text-sm text-gray-900">{option}</span>
                               </div>
                             ))}
                           </div>
@@ -431,7 +431,7 @@ export default function FormBuilder({ onSave, isLoading, initialData }: FormBuil
                       type="text"
                       value={field.label}
                       onChange={(e) => updateField(field.id, { label: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   </div>
                   
@@ -444,7 +444,7 @@ export default function FormBuilder({ onSave, isLoading, initialData }: FormBuil
                         type="text"
                         value={field.placeholder || ''}
                         onChange={(e) => updateField(field.id, { placeholder: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     </div>
                   )}
@@ -456,7 +456,7 @@ export default function FormBuilder({ onSave, isLoading, initialData }: FormBuil
                       onChange={(e) => updateField(field.id, { required: e.target.checked })}
                       className="mr-2"
                     />
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium text-gray-900">
                       Required field
                     </label>
                   </div>
@@ -464,16 +464,47 @@ export default function FormBuilder({ onSave, isLoading, initialData }: FormBuil
                   {(field.type === 'select' || field.type === 'radio' || field.type === 'checkbox') && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Options (one per line)
+                        Options
                       </label>
-                      <textarea
-                        value={field.options?.join('\n') || ''}
-                        onChange={(e) => updateField(field.id, { 
-                          options: e.target.value.split('\n').filter(opt => opt.trim()) 
-                        })}
-                        rows={4}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
+                      <div className="space-y-2">
+                        {(field.options || ['', '']).map((option, index) => (
+                          <div key={index} className="flex items-center space-x-2">
+                            <input
+                              type="text"
+                              value={option}
+                              onChange={(e) => {
+                                const newOptions = [...(field.options || [])];
+                                newOptions[index] = e.target.value;
+                                updateField(field.id, { options: newOptions.filter((opt, i) => opt.trim() !== '' || i === newOptions.length - 1) });
+                              }}
+                              placeholder={`Option ${index + 1}`}
+                              className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            />
+                            {field.options && field.options.length > 2 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newOptions = field.options?.filter((_, i) => i !== index) || [];
+                                  updateField(field.id, { options: newOptions });
+                                }}
+                                className="text-red-500 hover:text-red-700 text-sm"
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newOptions = [...(field.options || []), ''];
+                            updateField(field.id, { options: newOptions });
+                          }}
+                          className="text-sm text-indigo-600 hover:text-indigo-800"
+                        >
+                          + Add Option
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
