@@ -30,6 +30,7 @@ export default function PublicFormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     if (params.shareUrl) {
@@ -40,7 +41,7 @@ export default function PublicFormPage() {
   const fetchPublicForm = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(`https://dune-takehome-production.up.railway.app/api/v1/public/forms/${params.shareUrl}`);
+      const response = await axios.get(`${apiBaseUrl}/public/forms/${params.shareUrl}`);
       setForm(response.data);
     } catch (error) {
       console.error('Error fetching form:', error);
@@ -77,7 +78,7 @@ export default function PublicFormPage() {
       setIsSubmitting(true);
       setError(null);
   
-      await axios.post(`https://dune-takehome-production.up.railway.app/api/v1/public/forms/${params.shareUrl}/responses`, {
+      await axios.post(`${apiBaseUrl}/public/forms/${params.shareUrl}/responses`, {
         responses: responses
       });
   
