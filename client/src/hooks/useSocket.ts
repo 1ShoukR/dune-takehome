@@ -1,33 +1,66 @@
-import { useEffect, useRef } from 'react';
-import { io, Socket } from 'socket.io-client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useRef, useCallback } from 'react';
 
-export function useSocket(serverPath: string) {
-  const socket = useRef<Socket | null>(null);
+interface WebSocketMessage {
+  type: string;
+  [key: string]: any;
+}
+
+export function useSocket(path: string) {
+  const ws = useRef<WebSocket | null>(null);
+  const listeners = useRef<Map<string, (data: any) => void>>(new Map());
 
   useEffect(() => {
-    socket.current = io('http://localhost:8080', {
-      path: '/socket.io/',
-      transports: ['websocket'],
-    });
+    ws.current = new WebSocket('ws://localhost:8080/ws');
 
-    socket.current.on('connect', () => {
+    ws.current.onopen = () => {
       console.log('🔌 Connected to WebSocket server');
-    });
+    };
 
-    socket.current.on('disconnect', () => {
-      console.log('🔌❌ Disconnected from WebSocket server');
-    });
-
-    socket.current.on('connect_error', (error) => {
-      console.error('❌ WebSocket connection error:', error);
-    });
-
-    return () => {
-      if (socket.current) {
-        socket.current.disconnect();
+    ws.current.onmessage = (event) => {
+      try {
+        const message: WebSocketMessage = JSON.parse(event.data);
+        console.log('📨 WebSocket message received:', message);
+        
+        // Call appropriate listener
+        const listener = listeners.current.get(message.type);
+        if (listener) {
+          listener(message);
+        }
+      } catch (error) {
+        console.error('❌ Error parsing WebSocket message:', error);
       }
     };
-  }, [serverPath]);
 
-  return socket.current;
+    ws.current.onclose = () => {
+      console.log('🔌❌ Disconnected from WebSocket server');
+    };
+
+    ws.current.onerror = (error) => {
+      console.error('❌ WebSocket error:', error);
+    };
+
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, []);
+
+  const emit = useCallback((type: string, data?: any) => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      const message = { type, ...data };
+      ws.current.send(JSON.stringify(message));
+    }
+  }, []);
+
+  const on = useCallback((event: string, callback: (data: any) => void) => {
+    listeners.current.set(event, callback);
+  }, []);
+
+  const off = useCallback((event: string) => {
+    listeners.current.delete(event);
+  }, []);
+
+  return { emit, on, off };
 }
