@@ -192,30 +192,27 @@ export default function FormsPage() {
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        {form.status === 'published' && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigator.clipboard.writeText(`${window.location.origin}/f/${form.share_url}`);
-                              alert('Share link copied!');
-                            }}
-                            className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700"
-                          >
-                            Copy Share Link
-                          </button>
-                        )}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             router.push(`/forms/${form.id}/analytics`);
                           }}
-                          className="text-purple-600 hover:text-purple-900 text-sm font-medium"
+                          className="px-3 cursor-pointer py-1 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
                         >
                           Analytics
                         </button>
-                        <button className="text-gray-400 hover:text-gray-600 text-sm font-medium">
-                          •••
-                        </button>
+                        {form.status === 'published' && form.share_url && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(`${window.location.origin}/f/${form.share_url}`);
+                              alert('Share link copied to clipboard!');
+                            }}
+                            className="px-3 cursor-pointer py-1 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                          >
+                            Copy Share Link
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
