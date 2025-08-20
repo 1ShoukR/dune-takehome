@@ -14,12 +14,14 @@ import (
 type FormHandler struct {
 	formService     *services.FormService
 	responseService *services.ResponseService
+	wsService       *services.WebSocketService
 }
 
-func NewFormHandler() *FormHandler {
+func NewFormHandler(wsService *services.WebSocketService) *FormHandler {
 	return &FormHandler{
 		formService:     services.NewFormService(),
 		responseService: services.NewResponseService(),
+		wsService:       wsService,
 	}
 }
 
@@ -288,6 +290,17 @@ func (h *FormHandler) SubmitPublicFormResponse(c *fiber.Ctx) error {
 	}
 
 	log.Printf("✅ Response saved successfully with ID: %s", response.ID.Hex())
+
+	if h.wsService != nil {
+		go func() {
+			analytics, err := h.responseService.GetFormAnalytics(form)
+			if err != nil {
+				log.Printf("❌ Failed to generate analytics for broadcast: %v", err)
+				return
+			}
+			h.wsService.BroadcastNewResponse(form.ID, analytics)
+		}()
+	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message":     "Response submitted successfully",
