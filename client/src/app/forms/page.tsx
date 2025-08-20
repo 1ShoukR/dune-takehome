@@ -19,6 +19,7 @@ export default function FormsPage() {
   const [forms, setForms] = useState<Form[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showDraftsOnly, setShowDraftsOnly] = useState(false); 
   const router = useRouter();
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export default function FormsPage() {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await formsAPI.getAllForms();
+      const response = await formsAPI.getAllForms(showDraftsOnly ? 'draft' : undefined);
       setForms(response.forms || []);
     } catch (error: unknown) {
       console.error('Error fetching forms:', error);
@@ -39,13 +40,16 @@ export default function FormsPage() {
     }
   };
 
+  useEffect(() => {
+    fetchForms();
+  }, [showDraftsOnly]);
+
   const handleNewForm = () => {
     router.push('/forms/new');
   };
 
   const handleViewDrafts = () => {
-    // TODO: Filter to show only drafts
-    console.log('Filter to show drafts only');
+    setShowDraftsOnly(!showDraftsOnly);
   };
 
   return (
@@ -53,21 +57,30 @@ export default function FormsPage() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Your Forms</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {showDraftsOnly ? 'Draft Forms' : 'Your Forms'}
+            </h1>
             <p className="mt-1 text-sm text-gray-600">
-              Create and manage your custom forms
+              {showDraftsOnly 
+                ? 'Forms that are still being worked on'
+                : 'Create and manage your custom forms'
+              }
             </p>
           </div>
           
           <div className="flex space-x-3">
             <button
               onClick={handleViewDrafts}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className={`inline-flex items-center px-4 py-2 border shadow-sm text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                showDraftsOnly
+                  ? 'border-indigo-300 text-indigo-700 bg-indigo-50 hover:bg-indigo-100'
+                  : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+              }`}
             >
               <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              View Drafts
+              {showDraftsOnly ? 'Show All Forms' : 'View Drafts'}
             </button>
             <button
               onClick={handleNewForm}
@@ -112,9 +125,14 @@ export default function FormsPage() {
                 <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No saved forms</h3>
+                <h3 className="mt-2 text-sm font-medium text-gray-900">
+                  {showDraftsOnly ? 'No draft forms' : 'No saved forms'}
+                </h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  Get started by creating your first form.
+                  {showDraftsOnly 
+                    ? 'All your forms have been published.'
+                    : 'Get started by creating your first form.'
+                  }
                 </p>
                 <div className="mt-6">
                   <button
