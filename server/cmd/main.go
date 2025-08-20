@@ -7,12 +7,16 @@ import (
 	"dune-takehome-server/database"
 	"dune-takehome-server/handlers"
 	"dune-takehome-server/middleware"
+	"dune-takehome-server/services"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/websocket/v2"
 	"github.com/joho/godotenv"
 )
+
+var wsService *services.WebSocketService
 
 func main() {
 	// Load environment variables
@@ -35,6 +39,9 @@ func main() {
 			log.Printf("Error disconnecting from MongoDB: %v", err)
 		}
 	}()
+
+	// Initialize WebSocket service
+	wsService = services.NewWebSocketService()
 
 	// Initialize Fiber app
 	app := fiber.New(fiber.Config{
@@ -59,7 +66,6 @@ func main() {
 
 	// Health check route
 	app.Get("/health", func(c *fiber.Ctx) error {
-		// Check MongoDB connection
 		mongoStatus := "connected"
 		if err := database.Ping(); err != nil {
 			mongoStatus = "disconnected"
@@ -73,10 +79,16 @@ func main() {
 		})
 	})
 
+	// WebSocket endpoint
+	app.Get("/ws", func(c *fiber.Ctx) error {
+		if websocket.IsWebSocketUpgrade(c) {
+			return websocket.New(wsService.HandleConnection)(c)
+		}
+		return fiber.ErrUpgradeRequired
+	})
+
 	// API routes
 	api := app.Group("/api/v1")
-
-	// TODO: Add route handlers
 	setupRoutes(api)
 
 	port := os.Getenv("PORT")
@@ -85,13 +97,14 @@ func main() {
 	}
 
 	log.Printf("🚀 Server starting on port %s", port)
+	log.Printf("🔌 WebSocket server ready at ws://localhost:%s/socket.io/", port)
 	log.Fatal(app.Listen(":" + port))
 }
 
 func setupRoutes(api fiber.Router) {
 	// Initialize handlers
 	userHandler := handlers.NewUserHandler()
-	formHandler := handlers.NewFormHandler()
+	formHandler := handlers.NewFormHandler(wsService)
 
 	// Auth routes
 	auth := api.Group("/auth")
