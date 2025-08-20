@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import axios from 'axios';
 
 interface FormField {
   id: string;
@@ -39,21 +40,16 @@ export default function PublicFormPage() {
   const fetchPublicForm = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`http://localhost:8080/api/v1/public/forms/${params.shareUrl}`);
-      
-      if (!response.ok) {
-        throw new Error('Form not found');
-      }
-      
-      const data = await response.json();
-      setForm(data);
+      const response = await axios.get(`https://dune-takehome-production.up.railway.app/api/v1/public/forms/${params.shareUrl}`);
+      setForm(response.data);
     } catch (error) {
-      console.error('Error fetching form:', error); 
+      console.error('Error fetching form:', error);
       setError('Form not found or no longer available');
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const handleInputChange = (fieldId: string, value: any) => {
     setResponses(prev => ({
@@ -66,35 +62,25 @@ export default function PublicFormPage() {
     e.preventDefault();
     
     if (!form) return;
-
+  
     // Validate required fields
     const missingFields = form.fields
       .filter(field => field.required && !responses[field.id])
       .map(field => field.label);
-
+  
     if (missingFields.length > 0) {
       setError(`Please fill in required fields: ${missingFields.join(', ')}`);
       return;
     }
-
+  
     try {
       setIsSubmitting(true);
       setError(null);
-
-      const response = await fetch(`http://localhost:8080/api/v1/public/forms/${params.shareUrl}/responses`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          responses: responses
-        }),
+  
+      await axios.post(`https://dune-takehome-production.up.railway.app/api/v1/public/forms/${params.shareUrl}/responses`, {
+        responses: responses
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit form');
-      }
-
+  
       setIsSubmitted(true);
     } catch (error) {
       setError('Failed to submit form. Please try again.');
