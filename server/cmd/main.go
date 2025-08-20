@@ -59,7 +59,7 @@ func main() {
 	// Middleware
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "https://dune-takehome-production.up.railway.app, http://localhost:3000, https://pretty-imagination-production-3bad.up.railway.app",
+		AllowOrigins:     "https://pretty-imagination-production-3bad.up.railway.app,http://localhost:3000",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
 		AllowCredentials: true,
