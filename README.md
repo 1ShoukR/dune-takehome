@@ -9,6 +9,18 @@
 This is a takehome project given to me by Dune Security. It is a dynamic form builder application with ability to see live
 analytics of each form that is created. This app also allows for a person to generate a link and share their forms with other people. There is an authentication flow that makes every form unique to one person. You can preview the form, view your form, edit a form, publish them, and save as drafts
 
+## Extra Credit
+
+I am using JWT from the extra credit. I think that should be a requirement for the project, rather than extra credit. Just some small feedback.
+I did not have time to implement a DarkMode, but I would approach it with a ThemeProvider and ThemeContext nd utilize that to set DarkMode throughout the app.
+I did not have time to add unit tests
+I did not have time to add CSV exports, however, i do not think that would be too difficult to implement
+
+## Things To Add
+
+- I could add some way to delete forms. I feel like that should be a requirement, but it was not specified.
+- I could add a way to group forms together like how they are with the published and draft tags. That way, you can add different forms to a single group of forms. 
+
 ## Tech Stack
 
 - **Frontend**: Next.js 15, React 19, TailwindCSS 4, TypeScript
